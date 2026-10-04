@@ -1,55 +1,90 @@
-#include "matrix.h"
-#include <chrono>
-#include <cstddef>
-#include <exception>
-#include <iostream>
-#include <string>
+import std;
+import matrix;
 
 int main(int argc, char* argv[]) {
-    if (argc != 4) {
-        std::cerr
-            << "Usage: matrix_multiplication <matrix_a> <matrix_b> <result>\n";
-        return 1;
-    }
-
     try {
-        const std::string matrixAFile = argv[1];
-        const std::string matrixBFile = argv[2];
-        const std::string resultFile = argv[3];
+        if (argc != 4) {
+            std::cerr
+                << "Usage: matrix_multiplication "
+                << "<matrix_a> <matrix_b> <result>\n";
 
-        const Matrix a = Matrix::readFromFile(matrixAFile);
-        const Matrix b = Matrix::readFromFile(matrixBFile);
+            return 1;
+        }
+
+        const Matrix a =
+            Matrix::fromFile(argv[1]);
+
+        const Matrix b =
+            Matrix::fromFile(argv[2]);
 
         if (a.size() != b.size()) {
-            throw std::runtime_error("Matrices must have the same dimensions");
+            throw std::invalid_argument(
+                "Matrices must have the same size"
+            );
         }
+
+        const auto start =
+            std::chrono::steady_clock::now();
+
+        const Matrix result =
+            Matrix::multiply(a, b);
+
+        const auto finish =
+            std::chrono::steady_clock::now();
+
+        const std::chrono::duration<double> elapsed =
+            finish - start;
+
+        result.toFile(argv[3]);
 
         const std::size_t n = a.size();
 
-        const auto start = std::chrono::high_resolution_clock::now();
-        const Matrix result = multiply(a, b);
-        const auto finish = std::chrono::high_resolution_clock::now();
+        const std::uint64_t multiplications =
+            static_cast<std::uint64_t>(n) * n * n;
 
-        const std::chrono::duration<double> elapsed = finish - start;
+        const std::uint64_t additions =
+            static_cast<std::uint64_t>(n) * n * (n - 1);
 
-        result.writeToFile(resultFile);
+        const std::uint64_t operations =
+            multiplications + additions;
 
-        const unsigned long long operations =
-            static_cast<unsigned long long>(n) *
-            static_cast<unsigned long long>(n) *
-            static_cast<unsigned long long>(n);
+        const double gflops =
+            static_cast<double>(operations) /
+            elapsed.count() /
+            1'000'000'000.0;
 
-        std::cout << "Matrix multiplication completed.\n";
-        std::cout << "Matrix size: " << n << " x " << n << '\n';
-        std::cout << "Elements in one matrix: " << n * n << '\n';
-        std::cout << "Multiplications: " << operations << '\n';
-        std::cout << "Approximate additions: "
-                  << operations - n * n << '\n';
-        std::cout << "Execution time: " << elapsed.count() << " sec\n";
-        std::cout << "Result: " << resultFile << '\n';
+        std::cout
+            << "Matrix size: "
+            << n << " x " << n << '\n';
+
+        std::cout
+            << "Multiplications: "
+            << multiplications << '\n';
+
+        std::cout
+            << "Additions: "
+            << additions << '\n';
+
+        std::cout
+            << "Total operations: "
+            << operations << '\n';
+
+        std::cout
+            << "Time: "
+            << elapsed.count()
+            << " seconds\n";
+
+        std::cout
+            << "Performance: "
+            << gflops
+            << " GFLOPS\n";
 
     } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << '\n';
+        std::cerr
+            << "Error: "
+            << e.what()
+            << '\n';
+
         return 1;
     }
 
