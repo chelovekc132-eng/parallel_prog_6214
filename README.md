@@ -73,46 +73,6 @@ result.txt
 - производительность в GFLOPS;
 - путь к файлу с результатом.
 
-## Алгоритм
-
-Используется классический последовательный алгоритм умножения квадратных матриц:
-
-```text
-C[i][j] = Σ A[i][k] * B[k][j]
-```
-
-В программе используется порядок циклов `i-k-j`.
-
-Временная сложность алгоритма:
-
-```text
-O(N³)
-```
-
-## Сборка проекта
-
-Из корневой директории проекта выполнить:
-
-```bash
-cmake -S . -B build
-cmake --build build
-```
-
-## Запуск в Windows
-
-Для конфигурации Visual Studio:
-
-```powershell
-.uild\Debug\matrix_multiplication.exe lab1\data\matrix_a.txt lab1\data\matrix_b.txt lab1\data
-esult.txt
-```
-
-## Запуск в Linux/macOS
-
-```bash
-./build/matrix_multiplication lab1/data/matrix_a.txt lab1/data/matrix_b.txt lab1/data/result.txt
-```
-
 ## Автоматическая проверка результата
 
 Для проверки используется Python и библиотека NumPy.
