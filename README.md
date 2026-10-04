@@ -1,17 +1,19 @@
-# Parallel Programming — Laboratory Work 1
+# Параллельное программирование — лабораторная работа №1
 
-## Matrix multiplication
+## Умножение матриц
 
-The program performs sequential multiplication of two square matrices.
+В лабораторной работе реализовано последовательное умножение двух квадратных матриц.
 
-### Requirements
+## Требования
 
-- C++23 compiler
-- CMake 3.20 or newer
-- Python 3
-- NumPy
+Для сборки и запуска проекта необходимы:
 
-### Project structure
+- C++23;
+- CMake версии 3.20 или новее;
+- Python 3;
+- библиотека NumPy.
+
+## Структура проекта
 
 ```text
 lab1/
@@ -27,65 +29,129 @@ lab1/
     └── verify.py
 ```
 
-### Input
+## Исходные данные
 
-The first line contains `N`, followed by `N*N` matrix elements.
+Программа получает две квадратные матрицы из файлов:
 
-### Output
+```text
+matrix_a.txt
+matrix_b.txt
+```
 
-The C++ program writes the resulting matrix to the specified output file
-and prints:
+Первая строка файла содержит размер матрицы `N`.
 
-- matrix size;
-- number of elements;
-- number of multiplications;
-- number of additions;
-- total arithmetic operations;
-- approximate memory for the three matrices;
-- execution time;
-- performance in GFLOPS.
+Следующие `N` строк содержат элементы матрицы.
 
-### Build
+Пример:
+
+```text
+3
+1 2 3
+4 5 6
+7 8 9
+```
+
+## Результат
+
+Результирующая матрица записывается в файл:
+
+```text
+result.txt
+```
+
+Первая строка содержит размер результирующей матрицы, далее находятся её элементы.
+
+После выполнения программы в консоль выводятся:
+
+- размер матрицы;
+- количество элементов;
+- количество операций умножения;
+- количество операций сложения;
+- общее количество арифметических операций;
+- примерный объём памяти для трёх матриц;
+- время выполнения;
+- производительность в GFLOPS;
+- путь к файлу с результатом.
+
+## Алгоритм
+
+Используется классический последовательный алгоритм умножения квадратных матриц:
+
+```text
+C[i][j] = Σ A[i][k] * B[k][j]
+```
+
+В программе используется порядок циклов `i-k-j`.
+
+Временная сложность алгоритма:
+
+```text
+O(N³)
+```
+
+## Сборка проекта
+
+Из корневой директории проекта выполнить:
 
 ```bash
 cmake -S . -B build
 cmake --build build
 ```
 
-### Run on Windows
+## Запуск в Windows
+
+Для конфигурации Visual Studio:
 
 ```powershell
-.\build\Debug\matrix_multiplication.exe lab1\data\matrix_a.txt lab1\data\matrix_b.txt lab1\data\result.txt
+.uild\Debug\matrix_multiplication.exe lab1\data\matrix_a.txt lab1\data\matrix_b.txt lab1\data
+esult.txt
 ```
 
-### Run on Linux/macOS
+## Запуск в Linux/macOS
 
 ```bash
 ./build/matrix_multiplication lab1/data/matrix_a.txt lab1/data/matrix_b.txt lab1/data/result.txt
 ```
 
-### Verification
+## Автоматическая проверка результата
 
-Install NumPy:
+Для проверки используется Python и библиотека NumPy.
+
+Установить NumPy:
 
 ```bash
 python -m pip install numpy
 ```
 
-Run:
+После выполнения C++ программы запустить:
 
 ```bash
 python lab1/python/verify.py
 ```
 
-The verification independently calculates `A @ B` using NumPy and compares
-it with the result produced by the C++ program.
+Скрипт `verify.py`:
 
-### Algorithm
+1. считывает первую матрицу;
+2. считывает вторую матрицу;
+3. считывает результат, полученный программой на C++;
+4. независимо вычисляет произведение матриц с помощью NumPy;
+5. сравнивает результат C++ с результатом NumPy;
+6. сообщает об успешной или неуспешной проверке.
 
-Classical sequential matrix multiplication is used.
+При правильном результате выводится:
 
-Time complexity: `O(N^3)`.
+```text
+VERIFICATION PASSED
+```
 
-The loop order is `i-k-j`, which avoids repeatedly loading the same
-`A[i][k]` value and provides a cache-friendly sequential implementation.
+При обнаружении ошибки:
+
+```text
+VERIFICATION FAILED
+```
+
+Таким образом выполняется обязательная автоматизированная верификация результатов вычислений с помощью сторонней библиотеки.
+
+## Цель работы
+
+Цель лабораторной работы — реализовать последовательное умножение двух квадратных матриц, измерить время выполнения алгоритма, определить вычислительные характеристики задачи и автоматически проверить корректность результата.
