@@ -1,10 +1,11 @@
-module matrix;
+#include "matrix.h"
 
-import std;
+#include <fstream>
+#include <iomanip>
+#include <stdexcept>
 
 Matrix::Matrix(std::size_t size)
-    : size_(size),
-      data_(size * size, 0.0) {}
+    : size_(size), data_(size * size, 0.0) {}
 
 std::size_t Matrix::size() const noexcept {
     return size_;
@@ -24,20 +25,20 @@ double Matrix::operator()(
     return data_[row * size_ + column];
 }
 
-Matrix Matrix::fromFile(const std::string& filename) {
-    std::ifstream file(filename);
+Matrix Matrix::readFromFile(const std::string& filename) {
+    std::ifstream input(filename);
 
-    if (!file) {
+    if (!input) {
         throw std::runtime_error(
-            "Cannot open file: " + filename
+            "Cannot open input file: " + filename
         );
     }
 
-    std::size_t n;
+    std::size_t n{};
 
-    if (!(file >> n)) {
+    if (!(input >> n) || n == 0) {
         throw std::runtime_error(
-            "Invalid matrix size"
+            "Invalid matrix size in: " + filename
         );
     }
 
@@ -45,9 +46,9 @@ Matrix Matrix::fromFile(const std::string& filename) {
 
     for (std::size_t i = 0; i < n; ++i) {
         for (std::size_t j = 0; j < n; ++j) {
-            if (!(file >> matrix(i, j))) {
+            if (!(input >> matrix(i, j))) {
                 throw std::runtime_error(
-                    "Invalid matrix data"
+                    "Invalid matrix data in: " + filename
                 );
             }
         }
@@ -56,53 +57,53 @@ Matrix Matrix::fromFile(const std::string& filename) {
     return matrix;
 }
 
-void Matrix::toFile(
+void Matrix::writeToFile(
     const std::string& filename
 ) const {
-    std::ofstream file(filename);
+    std::ofstream output(filename);
 
-    if (!file) {
+    if (!output) {
         throw std::runtime_error(
-            "Cannot create file: " + filename
+            "Cannot create output file: " + filename
         );
     }
 
-    file << size_ << '\n';
+    output << size_ << '\n';
+    output << std::setprecision(15);
 
     for (std::size_t i = 0; i < size_; ++i) {
         for (std::size_t j = 0; j < size_; ++j) {
-            file << (*this)(i, j);
-
-            if (j + 1 < size_) {
-                file << ' ';
+            if (j != 0) {
+                output << ' ';
             }
+
+            output << (*this)(i, j);
         }
 
-        file << '\n';
+        output << '\n';
     }
 }
 
-Matrix Matrix::multiply(
+Matrix multiply(
     const Matrix& a,
     const Matrix& b
 ) {
     if (a.size() != b.size()) {
         throw std::invalid_argument(
-            "Matrix sizes must match"
+            "Matrices must have the same dimensions"
         );
     }
 
     const std::size_t n = a.size();
-
     Matrix result(n);
 
+    // Classical sequential O(N^3) multiplication.
     for (std::size_t i = 0; i < n; ++i) {
         for (std::size_t k = 0; k < n; ++k) {
-            const double aik = a(i, k);
+            const double a_ik = a(i, k);
 
             for (std::size_t j = 0; j < n; ++j) {
-                result(i, j) +=
-                    aik * b(k, j);
+                result(i, j) += a_ik * b(k, j);
             }
         }
     }
