@@ -1,87 +1,91 @@
-# Matrix Multiplication
+# Parallel Programming — Laboratory Work 1
 
-Лабораторная работа: перемножение двух квадратных матриц на C++.
+## Matrix multiplication
 
-## Возможности
-- чтение двух квадратных матриц из файлов;
-- последовательное умножение матриц;
-- измерение времени выполнения;
-- сохранение результата в файл;
-- автоматическая проверка результата через Python + NumPy.
+The program performs sequential multiplication of two square matrices.
 
-## Структура
+### Requirements
 
-```text
-MatrixMultiplication/
-├── CMakeLists.txt
-├── README.md
-└── lab1/
-    ├── cpp/
-    │   ├── main.cpp
-    │   ├── matrix.cpp
-    │   └── matrix.h
-    ├── data/
-    │   ├── matrix_a.txt
-    │   ├── matrix_b.txt
-    │   └── result.txt
-    └── python/
-        └── verify.py
-```
+- C++23 compiler
+- CMake 3.20 or newer
+- Python 3
+- NumPy
 
-## Формат входных файлов
-
-Первая строка содержит размер `N`, далее идут `N*N` элементов матрицы.
-
-Пример:
+### Project structure
 
 ```text
-3
-1 2 3
-4 5 6
-7 8 9
+lab1/
+├── cpp/
+│   ├── main.cpp
+│   ├── matrix.cpp
+│   └── matrix.h
+├── data/
+│   ├── matrix_a.txt
+│   ├── matrix_b.txt
+│   └── result.txt
+└── python/
+    └── verify.py
 ```
 
-## Сборка
+### Input
+
+The first line contains `N`, followed by `N*N` matrix elements.
+
+### Output
+
+The C++ program writes the resulting matrix to the specified output file
+and prints:
+
+- matrix size;
+- number of elements;
+- number of multiplications;
+- number of additions;
+- total arithmetic operations;
+- approximate memory for the three matrices;
+- execution time;
+- performance in GFLOPS.
+
+### Build
 
 ```bash
 cmake -S . -B build
 cmake --build build
 ```
 
-## Запуск
-
-Из корня проекта:
-
-```bash
-./build/matrix_multiplication lab1/data/matrix_a.txt lab1/data/matrix_b.txt lab1/data/result.txt
-```
-
-Windows:
+### Run on Windows
 
 ```powershell
 .\build\Debug\matrix_multiplication.exe lab1\data\matrix_a.txt lab1\data\matrix_b.txt lab1\data\result.txt
 ```
 
-## Проверка
-
-Установить NumPy:
+### Run on Linux/macOS
 
 ```bash
-pip install numpy
+./build/matrix_multiplication lab1/data/matrix_a.txt lab1/data/matrix_b.txt lab1/data/result.txt
 ```
 
-Запустить:
+### Verification
+
+Install NumPy:
+
+```bash
+python -m pip install numpy
+```
+
+Run:
 
 ```bash
 python lab1/python/verify.py
 ```
 
-Скрипт независимо вычисляет `A @ B` и сравнивает его с результатом программы на C++.
+The verification independently calculates `A @ B` using NumPy and compares
+it with the result produced by the C++ program.
 
-## Измеряемые характеристики
+### Algorithm
 
-Программа выводит:
-- размер матрицы;
-- количество элементов;
-- количество операций умножения и сложения;
-- время выполнения.
+Classical sequential matrix multiplication is used.
+
+Time complexity: `O(N^3)`.
+
+The loop order is `i-k-j`, which avoids repeatedly loading the same
+`A[i][k]` value and provides a cache-friendly sequential implementation.
