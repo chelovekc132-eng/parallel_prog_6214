@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.20)
 
 project(ParallelProgramming
     VERSION 1.0
@@ -14,15 +14,12 @@ add_executable(matrix_multiplication
     lab1/cpp/matrix.cpp
 )
 
-target_sources(matrix_multiplication
+target_include_directories(matrix_multiplication
     PRIVATE
-        FILE_SET cxx_modules TYPE CXX_MODULES
-        BASE_DIRS lab1/cpp
-        FILES
-            lab1/cpp/matrix.ixx
+        lab1/cpp
 )
 
-if (MSVC)
+if(MSVC)
     target_compile_options(matrix_multiplication PRIVATE
         /W4
         /permissive-
